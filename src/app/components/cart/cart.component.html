@@ -1,0 +1,108 @@
+<ng-container *ngIf="my_cart.items.length === 0 else content">
+  <div class="container ">
+    <div class="row py-5 justify-content-center">
+      <div class="col-md-9 text-center">
+        <p class="text-muted">There are no items in this cart.</p>
+        <a class="btn btn-primary" routerLink="/">Go shopping</a>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #content>
+
+  <div *ngIf="my_cart.items.length > 0" class="container justify-content-center">
+    <div class="row py-5">
+      <div class="col-md-9">
+        <div class="col-md-12" *ngFor="let item of my_cart.items">
+          <div class="media text-muted pt-3  border-bottom border-gray">
+
+            <img [src]="item.image_name" alt="32x32" class="mr-2 rounded" style="width: 32px; height: 32px;"
+              data-holder-rendered="true">
+            <p class="media-body pb-3 mb-0 small lh-125">
+              <strong class="d-block text-gray-dark">{{ item.item_name }}</strong>
+              {{ item.description }}
+            </p>
+            <p class="text-danger">₱ {{item.selling_price}}</p>
+            <div class="form-row justify-content-center">
+              <div class="col-1 px-0">
+                <button class="btn btn-sm btn-default rounded-0 mt-1 border-right-0" [disabled]="!item.quantity"
+                  (click)="changQuantity(item, false)">
+                  <i class="fa fa-minus"></i>
+                </button>
+              </div>
+              <div class="col-2 mx-0 px-0">
+                <input type="number" [(ngModel)]="item.quantity" class="text-center ml-2 form-control form-control-sm rounded-0 ">
+              </div>
+              <div class="col-1 mx-0 px-0">
+                <button class="btn btn-sm btn-default rounded-0 mt-1 ml-2 border-left-0" (click)="changQuantity(item)">
+                  <i class="fa fa-plus"></i>
+                </button>
+              </div>
+            </div>
+            <button class="btn btn-link mr-auto" title="Remove item" (click)="show(remove, item)">
+              <i class="fa fa-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="mb-4">
+          <div class="form-row justify-content-center">
+            <div class="col-9 px-0">
+
+              <input type="text" [(ngModel)]="voucher_code" name="voucher_code" class="form-control mx-0 rounded-0"
+                placeholder="Voucher">
+            </div>
+            <div class="col-3 px-0">
+              <button class="btn btn-primary rounded-0 mx-0" [disabled]="!voucher_code" (click)="applyVoucher()">Apply</button>
+            </div>
+          </div>
+          <small *ngIf="voucher_invalid" class="float-left text-danger">* Invalid voucher code</small>
+        </div>
+        <h5>Order summary</h5>
+        <div class="col">
+          <p class="text-muted">Total sales
+            <small class="float-right pt-1">{{ my_cart.total_sales }}</small>
+          </p>
+          <p class="text-muted">Total VAT
+            <small class="float-right pt-1">{{ my_cart.total_vat }}</small>
+          </p>
+          <p *ngIf="my_cart.discount" class="text-muted">Discount
+            <small class="float-right pt-1">{{ my_cart.discount }}</small>
+          </p>
+          <p class="text-muted"><small><strong>Amount payable</strong></small>
+            <small class="float-right pt-1"><strong>{{ my_cart.amount_payable - my_cart.discount }}</strong></small>
+
+          </p>
+
+        </div>
+        <button class="btn btn-block btn-primary rounded-0" (click)="saveOrder()" [disabled]="saving">
+          <i *ngIf="saving" class="fa fa-spinner fa-spin"></i>{{ saving ? ' PLACING ORDER' : 'PLACE ORDER' }}</button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #remove let-modal let-c="close">
+  <div class="modal-header rounded-0">
+    <h4 class="modal-title">Remove item</h4>
+    <button type="button" class="btn btn-link text-secondary" aria-label="Close" (click)="cancel()">
+      <span class="fa fa-times"></span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p class="text-muted">This item will be removed from your order.</p>
+  </div>
+
+  <div class="modal-footer rounded-0">
+    <div class="form-group float-right mt-2 mb-1">
+      <button type="button" (click)="cancel()" class="btn btn-default rounded-0 btn-sm">
+        Cancel
+      </button>
+      <button type="submit" (click)="removeItem()" class="btn btn-primary rounded-0 btn-sm">
+        Remove
+      </button>
+    </div>
+  </div>
+</ng-template>
